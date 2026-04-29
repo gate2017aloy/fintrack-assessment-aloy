@@ -1,0 +1,10 @@
+{
+  "name": "fintrack-assessment-root",
+  "private": true,
+  "description": "FinTrack Pro - Senior Engineer Technical Assessment Workspace",
+  "scripts": {
+    "dev": "pnpm -r --filter './apps/*' dev",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test"
+  }
+}
