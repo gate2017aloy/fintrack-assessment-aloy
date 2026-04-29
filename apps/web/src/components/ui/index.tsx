@@ -47,3 +47,15 @@ export const TableHead = ({ children }: any) => (
 export const TableCell = ({ children }: any) => (
   <td className="p-3 text-sm">{children}</td>
 )
+
+export const Button = ({ children, className, disabled, title }: any) => (
+  <button 
+    className={`px-4 py-2 rounded font-medium transition-colors ${
+      disabled ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700'
+    } ${className}`}
+    disabled={disabled}
+    title={title}
+  >
+    {children}
+  </button>
+)

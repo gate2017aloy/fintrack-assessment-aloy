@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { db } from '@/lib/db'
-import { reconciliationRuns } from '@/lib/db/schema'
+import { reconciliationRuns, reconciliations } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { reconcilePaymentsImproved as reconcilePayments, BankRecord } from '@/lib/services/reconciliation/improved-reconciler'
-import { getSession } from '@/lib/auth'
+import { getSession } from './auth'
+
+// This is a forced update to resolve stale build issues.
 
 const ReconcileRequestSchema = z.object({
   bankData: z.array(
@@ -77,21 +79,27 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url)
     const id = searchParams.get('id')
 
-    if (!id) {
-      return NextResponse.json({ error: 'ID is required' }, { status: 400 })
+    if (id) {
+      // Secure retrieval for a specific reconciliation
+      const results = await db
+        .select()
+        .from(reconciliations)
+        .where(eq(reconciliations.id, id))
+
+      if (results.length === 0) {
+        return NextResponse.json({ error: 'Not found' }, { status: 404 })
+      }
+
+      return NextResponse.json(results[0])
     }
 
-    // Secure retrieval (No more SQL injection)
-    const runs = await db
+    // Return all reconciliations if no ID is provided
+    const allResults = await db
       .select()
-      .from(reconciliationRuns)
-      .where(eq(reconciliationRuns.id, id))
+      .from(reconciliations)
+      .orderBy(reconciliations.periodStart)
 
-    if (runs.length === 0) {
-      return NextResponse.json({ error: 'Not found' }, { status: 404 })
-    }
-
-    return NextResponse.json(runs[0])
+    return NextResponse.json({ runs: allResults })
   } catch (error) {
     console.error('Failed to fetch reconciliation run:', error)
     return NextResponse.json({ error: 'An unexpected error occurred' }, { status: 500 })
