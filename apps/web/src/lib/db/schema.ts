@@ -20,3 +20,9 @@ export const reconciliations = pgTable('reconciliations', {
   difference: doublePrecision('difference'),
   status: text('status'),
 })
+
+export const reconciliationRuns = pgTable('reconciliation_runs', {
+  id: text('id').primaryKey(),
+  notes: text('notes'),
+  createdAt: timestamp('created_at').defaultNow(),
+})
