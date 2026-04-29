@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { db } from '@/lib/db'
-import { reconcilePayments, BankRecord } from '@/lib/services/reconciliation/reconciler'
+import { reconcilePaymentsImproved as reconcilePayments, BankRecord } from '@/lib/services/reconciliation/improved-reconciler'
 
 const ReconcileRequestSchema = z.object({
   bankData: z.array(
